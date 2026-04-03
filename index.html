@@ -67,6 +67,10 @@
                         <div class="legend-item"><span class="legend-dot internal"></span> Internal</div>
                         <div class="legend-item"><span class="legend-dot internal"></span> AAT</div>
                         <div class="legend-item"><span class="legend-dot project"></span> Project</div>
+                        <div class="legend-item"><span class="legend-dot conflict"></span> Event</div>
+                    </div>
+                </div>
+            </section>
                         <div class="legend-item"><span class="legend-dot conflict"></span> Dept. Event</div>
                     </div>
                 </div>
@@ -105,6 +109,17 @@
             <p id="conflictSubjects"></p>
             <button id="confirmConflict">Mark as Absent</button>
             <button id="closeModal">Cancel</button>
+        </div>
+    </div>
+
+    <div id="dayDetailsModal" class="modal">
+        <div class="modal-content day-details-modal">
+            <div class="day-details-header">
+                <h3 id="dayDetailsTitle">Date</h3>
+                <button class="close-day-details">&times;</button>
+            </div>
+            <div id="dayDetailsContent"></div>
+            <div id="dayDetailsActions"></div>
         </div>
     </div>
 

@@ -246,8 +246,13 @@ function renderTodaySchedule() {
     const btn = document.getElementById('attendedAllBtn');
     
     const event = getEventForDate(todayStr);
-    if (event && (event.type === 'holiday' || event.type === 'aat' || event.type === 'internal')) {
-        container.innerHTML = '<div class="holiday-message"><span>🏖️</span><span class="holiday-text">' + event.name + ' - No Classes!</span></div>';
+    if (event) {
+        const icon = event.type === 'holiday' ? '🏖️' : event.type === 'internal' ? '📝' : event.type === 'aat' ? '🎯' : event.type === 'project' ? '🎓' : event.type === 'event' ? '📅' : '🎉';
+        container.innerHTML = `<div class="holiday-message">
+            <span class="holiday-icon">${icon}</span>
+            <span class="holiday-text">${event.name}</span>
+            <span class="holiday-subtext">No Logging Available</span>
+        </div>`;
         btn.style.display = 'none';
         return;
     }
@@ -255,6 +260,11 @@ function renderTodaySchedule() {
     btn.style.display = 'block';
     const todayCodes = getTodaySubjects();
     container.innerHTML = '';
+
+    if (todayCodes.length === 0) {
+        container.innerHTML = '<p style="color: var(--text-secondary); text-align: center;">No classes today</p>';
+        return;
+    }
 
     todayCodes.forEach(code => {
         if (['MENTORING', 'LIBRARY', 'NSS'].includes(code)) return;
@@ -275,10 +285,6 @@ function renderTodaySchedule() {
         `;
         container.appendChild(div);
     });
-
-    if (container.children.length === 0) {
-        container.innerHTML = '<p style="color: var(--text-secondary); text-align: center;">No classes today</p>';
-    }
 }
 
 function markAttendance(code, present) {
@@ -519,40 +525,103 @@ function setupCalendarClick() {
 }
 
 function handleCalendarClick(dateStr) {
+    const date = new Date(dateStr);
     const today = new Date();
     today.setHours(0, 0, 0, 0);
-    if (new Date(dateStr) < today) return;
-
+    
+    const isPast = date < today;
     const event = getEventForDate(dateStr);
-    if (event) return;
-
-    if (conflicts.includes(dateStr)) {
-        conflicts = conflicts.filter(c => c !== dateStr);
-        saveConflicts();
-        renderCalendar();
-        renderEventsCalendar();
-        return;
-    }
-
     const daySubjects = getSubjectsForDate(dateStr);
-    if (daySubjects.length === 0) return;
+    const dayLogs = logs[dateStr] || [];
+    
+    const dateDisplay = date.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
+    document.getElementById('dayDetailsTitle').textContent = dateDisplay;
+    
+    let content = '';
+    
+    if (event) {
+        const icon = event.type === 'holiday' ? '🏖️' : event.type === 'internal' ? '📝' : event.type === 'aat' ? '🎯' : event.type === 'project' ? '🎓' : event.type === 'event' ? '📅' : '🎉';
+        content += `<div class="day-event ${event.type}"><span class="icon">${icon}</span> ${event.name}</div>`;
+    }
+    
+    if (daySubjects.length > 0) {
+        content += `<div class="day-section"><h4>📚 Classes</h4><div class="day-subjects-list">`;
+        daySubjects.forEach(code => {
+            const subject = subjects.find(s => s.code === code);
+            if (subject) {
+                content += `<div class="day-subject-item">${subject.code} - ${subject.name}</div>`;
+            }
+        });
+        content += '</div></div>';
+    }
+    
+    if (dayLogs.length > 0) {
+        content += `<div class="day-section"><h4>📋 Attendance Log</h4><div class="day-logs-list">`;
+        dayLogs.forEach(log => {
+            const subject = subjects.find(s => s.code === log.code);
+            const status = log.present ? '✓ Present' : '✗ Absent';
+            const statusClass = log.present ? 'present' : 'absent';
+            if (subject) {
+                content += `<div class="day-log-item ${statusClass}">${subject.code} - ${subject.name}: ${status}</div>`;
+            }
+        });
+        content += '</div></div>';
+    }
+    
+    if (daySubjects.length === 0 && dayLogs.length === 0 && !event) {
+        content = '<div class="day-empty">No classes or activities on this day</div>';
+    }
+    
+    document.getElementById('dayDetailsContent').innerHTML = content;
+    
+    let actionsHtml = '';
+    if (!isPast && daySubjects.length > 0 && !event) {
+        actionsHtml = `<div class="day-actions">
+            <button class="btn-day-action present-all" data-date="${dateStr}">✓ Attended All</button>
+            <button class="btn-day-action add-manual" data-date="${dateStr}">+ Add Manual Entry</button>
+        </div>`;
+    } else if (isPast) {
+        actionsHtml = '<div class="day-past-notice">Past date - Cannot modify</div>';
+    } else if (event) {
+        actionsHtml = '<div class="day-event-notice">No logging on ' + (event.name || 'event') + ' day</div>';
+    }
+    
+    document.getElementById('dayDetailsActions').innerHTML = actionsHtml;
+    
+    document.getElementById('dayDetailsModal').classList.add('show');
+    
+    document.querySelector('.close-day-details').onclick = () => {
+        document.getElementById('dayDetailsModal').classList.remove('show');
+    };
+    
+    document.querySelector('.present-all')?.addEventListener('click', (e) => {
+        const dateKey = e.target.dataset.date;
+        logDayAttendance(dateKey);
+    });
+}
 
-    document.getElementById('conflictDate').textContent = new Date(dateStr).toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
-    document.getElementById('conflictSubjects').textContent = 'Subjects: ' + daySubjects.join(', ');
+function logDayAttendance(dateStr) {
+    const daySubjects = getSubjectsForDate(dateStr);
+    if (!logs[dateStr]) logs[dateStr] = [];
     
-    document.getElementById('conflictModal').classList.add('show');
+    daySubjects.forEach(code => {
+        const subject = subjects.find(s => s.code === code);
+        if (subject && subject.remaining > 0) {
+            subject.present++;
+            subject.remaining--;
+            logs[dateStr].push({ code, present: true, time: new Date().toISOString() });
+        }
+    });
     
-    document.getElementById('confirmConflict').onclick = () => {
-        conflicts.push(dateStr);
-        saveConflicts();
-        document.getElementById('conflictModal').classList.remove('show');
-        renderCalendar();
-        renderEventsCalendar();
-    };
-    
-    document.getElementById('closeModal').onclick = () => {
-        document.getElementById('conflictModal').classList.remove('show');
-    };
+    saveSubjects();
+    saveLogs();
+    renderTodaySchedule();
+    renderAllSubjects();
+    renderStats();
+    renderQuickStats();
+    renderEventsCalendar();
+    renderCalendar();
+    document.getElementById('dayDetailsModal').classList.remove('show');
 }
 
 function getSubjectsForDate(dateStr) {

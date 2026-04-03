@@ -177,14 +177,20 @@ main { display: block; }
 }
 
 .holiday-message {
-    display: flex; align-items: center; justify-content: center;
-    gap: 12px; padding: 20px;
-    background: rgba(16,185,129,0.1);
-    border: 1px solid var(--success);
-    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 24px 20px;
+    background: rgba(245,158,11,0.1);
+    border: 1px solid var(--warning);
+    border-radius: 12px;
 }
 
-.holiday-text { color: var(--success); font-weight: 600; }
+.holiday-icon { font-size: 2.5rem; }
+.holiday-text { color: var(--warning); font-size: 1.1rem; font-weight: 600; }
+.holiday-subtext { color: var(--text-secondary); font-size: 0.8rem; }
 
 .subject-card {
     background: var(--bg-card);
@@ -631,6 +637,134 @@ main { display: block; }
     max-width: 340px;
     width: 85%;
     animation: modalIn 0.3s ease;
+}
+
+.day-details-modal {
+    max-width: 400px;
+}
+
+.day-details-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+.day-details-header h3 {
+    margin: 0;
+    font-size: 1.1rem;
+}
+
+.close-day-details {
+    background: none;
+    border: none;
+    color: var(--text-secondary);
+    font-size: 1.5rem;
+    cursor: pointer;
+    padding: 0 8px;
+}
+
+.day-event {
+    padding: 12px 16px;
+    border-radius: 10px;
+    font-weight: 600;
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.day-event.holiday { background: rgba(239,68,68,0.2); color: var(--danger); }
+.day-event.internal, .day-event.aat { background: rgba(245,158,11,0.2); color: var(--warning); }
+.day-event.project { background: rgba(168,85,247,0.2); color: var(--purple); }
+.day-event.event { background: rgba(99,102,241,0.2); color: var(--accent); }
+.day-event.fest { background: rgba(236,72,153,0.2); color: #ec4899; }
+
+.day-section {
+    margin-bottom: 14px;
+}
+
+.day-section h4 {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.day-subjects-list, .day-logs-list {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.day-subject-item {
+    padding: 8px 12px;
+    background: var(--bg-card);
+    border-radius: 8px;
+    font-size: 0.85rem;
+}
+
+.day-log-item {
+    padding: 8px 12px;
+    background: var(--bg-card);
+    border-radius: 8px;
+    font-size: 0.85rem;
+    display: flex;
+    justify-content: space-between;
+}
+
+.day-log-item.present { border-left: 3px solid var(--success); }
+.day-log-item.absent { border-left: 3px solid var(--danger); }
+
+.day-empty {
+    text-align: center;
+    padding: 20px;
+    color: var(--text-secondary);
+}
+
+.day-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 16px;
+}
+
+.btn-day-action {
+    flex: 1;
+    padding: 10px;
+    border-radius: 8px;
+    border: none;
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.btn-day-action.present-all {
+    background: var(--success);
+    color: white;
+}
+
+.btn-day-action.add-manual {
+    background: var(--accent);
+    color: white;
+}
+
+.day-past-notice {
+    text-align: center;
+    padding: 10px;
+    color: var(--text-secondary);
+    font-size: 0.8rem;
+    background: var(--bg-card);
+    border-radius: 8px;
+}
+
+.day-event-notice {
+    text-align: center;
+    padding: 10px;
+    color: var(--warning);
+    font-size: 0.8rem;
+    background: rgba(245,158,11,0.15);
+    border-radius: 8px;
 }
 
 @keyframes modalIn {
