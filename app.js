@@ -116,9 +116,6 @@ const DEPARTMENTAL_EVENTS = {
     '2026-05-15': { name: 'Technical Aptitude Test', type: 'event' }
 };
 
-const SEMESTER_START = new Date('2026-02-23');
-const SEMESTER_END = new Date('2026-05-30');
-
 let subjects = [];
 let target = 75;
 let conflicts = [];
