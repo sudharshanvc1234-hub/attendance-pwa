@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#0a0a1a">
+    <title>Attendance God-Mode</title>
+    <link rel="manifest" href="manifest.json">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="app">
+        <header class="header">
+            <div class="header-content">
+                <h1>🎓 Attendance</h1>
+                <p id="currentDate"></p>
+            </div>
+        </header>
+
+        <div class="target-bar">
+            <label>Target: <span id="targetValue">75%</span></label>
+            <input type="range" id="targetSlider" min="50" max="100" value="75">
+            <div class="presets">
+                <button data-target="75">75%</button>
+                <button data-target="80">80%</button>
+                <button data-target="85">85%</button>
+            </div>
+        </div>
+
+        <div id="alerts"></div>
+        <div id="riskIndicator"></div>
+
+        <main id="mainContent">
+            <!-- Dashboard View -->
+            <section id="view-dashboard" class="view active">
+                <section class="card">
+                    <h2>📅 Today</h2>
+                    <div id="todaySubjects"></div>
+                    <button id="attendedAllBtn">✓ Attended All Today</button>
+                </section>
+                <section class="card">
+                    <h2>📊 Quick Stats</h2>
+                    <div id="quickStats"></div>
+                </section>
+            </section>
+
+            <!-- Subjects View -->
+            <section id="view-subjects" class="view">
+                <h2>📚 All Subjects</h2>
+                <div id="subjectsGrid"></div>
+            </section>
+
+            <!-- Calendar View -->
+            <section id="view-calendar" class="view">
+                <h2>🗓️ Calendar</h2>
+                <div class="cal-wrapper">
+                    <div class="cal-header">
+                        <button id="prevMonth">← Prev</button>
+                        <span id="currentMonth"></span>
+                        <button id="nextMonth">Next →</button>
+                    </div>
+                    <div id="calendarGrid"></div>
+                    <div class="legend">
+                        <div class="legend-item"><span class="legend-dot holiday"></span> Holiday</div>
+                        <div class="legend-item"><span class="legend-dot internal"></span> Internal</div>
+                        <div class="legend-item"><span class="legend-dot internal"></span> AAT</div>
+                        <div class="legend-item"><span class="legend-dot project"></span> Project</div>
+                        <div class="legend-item"><span class="legend-dot conflict"></span> Dept. Event</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Events View -->
+            <section id="view-events" class="view">
+                <div class="events-section">
+                    <div class="events-header">
+                        <h2>📋 Events & History</h2>
+                    </div>
+                    <div class="events-list" id="eventsList"></div>
+                </div>
+            </section>
+
+            <!-- Stats View -->
+            <section id="view-stats" class="view">
+                <h2>📊 Overall Stats</h2>
+                <div id="statsGrid"></div>
+            </section>
+        </main>
+    </div>
+
+    <nav class="bottom-nav">
+        <button class="nav-btn active" data-view="dashboard">🏠<span>Home</span></button>
+        <button class="nav-btn" data-view="subjects">📚<span>Subjects</span></button>
+        <button class="nav-btn" data-view="calendar">🗓️<span>Calendar</span></button>
+        <button class="nav-btn" data-view="events">📋<span>Events</span></button>
+        <button class="nav-btn" data-view="stats">📊<span>Stats</span></button>
+    </nav>
+
+    <div id="conflictModal" class="modal">
+        <div class="modal-content">
+            <h3>Plan Absence</h3>
+            <p id="conflictDate"></p>
+            <p id="conflictSubjects"></p>
+            <button id="confirmConflict">Mark as Absent</button>
+            <button id="closeModal">Cancel</button>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
